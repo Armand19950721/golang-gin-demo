@@ -1,0 +1,40 @@
+version: '3'
+networks:
+  backend:
+    driver: bridge
+
+services:
+  gin:
+    build:
+      context: ./service
+    restart: always
+    ports:
+      - 8080:8080
+    command: ./main
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1m"
+    depends_on:
+      - postgres
+  ################################
+  postgres:
+    restart: always
+    image: postgres:10.4
+    volumes:
+      - ./volumes/pg/data/:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: spe3d
+      POSTGRES_PASSWORD: 123123
+      POSTGRES_DB: service
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+    logging:
+      options:
+        max-file: "10"
+        max-size: "1m"
